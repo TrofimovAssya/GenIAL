@@ -13,7 +13,6 @@ class StatsCollector(object):
         self.total = 0
     
     def add(self, value, *labels):
-        
         self.total += 1
         
         if self.global_max is None :
