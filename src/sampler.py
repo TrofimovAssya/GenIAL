@@ -4,42 +4,44 @@ Created on Oct 4, 2015
 @author: bighouse
 '''
 
-from collections import Counter
 from src.main import Processor, FileHandler
 from sets import Set
 import random
 
-
-
-def generate_indices(total, sample, test):
+def generate_indices(total, sample, test, validation):
         test_indices = Set()
         train_indices = Set()
+        validation_indices = Set()
         accu = 0
-        while accu < sample + test :
+        while accu < sample + test + validation :
             index = random.randint(0, total)
-            if index in train_indices or index in test_indices :
+            if index in train_indices or index in test_indices or index in validation_indices:
                 continue
             accu += 1
             if len(train_indices) < sample :
                 train_indices.add(index)
             elif len(test_indices) < test :
                 test_indices.add(index)
-        return (train_indices, test_indices)
-
-print generate_indices(1000, 100, 10)            
+            elif len(validation_indices) < validation :
+                validation_indices.add(index)
+        return (train_indices, test_indices, validation_indices)
 
 class Sampler(Processor):
 
     def __init__(self,
                  n,
+                 training_file,
+                 test_file,
+                 validation_file,
                  sample = 100000,
                  test = 0.1,
-                 training_file = "train_sample",
-                 test_file = "test_sample"):
+                 validation = 0.1
+      ):
         self.test = test
-        self.sample = generate_indices(n, sample, test * sample)
+        self.sample = generate_indices(n, sample, test * sample, validation * sample)
         self.training_file = open(training_file, "a")
         self.test_file = open(test_file, "a")
+        self.validation_file = open(validation_file, "a")
         self.line_number = 0
         
     def register(self, x):
@@ -55,6 +57,8 @@ class Sampler(Processor):
             self.write_to_file(seq, rname, self.training_file)
         elif self.line_number in self.sample[1] :
             self.write_to_file(seq, rname, self.test_file)
+        elif self.line_number in self.sample[2] :
+            self.write_to_file(seq, rname, self.validation_file)
         
     def write_to_file(self, data, clazz, f):
         f.write(data + "###" + clazz + "\n")
@@ -62,12 +66,23 @@ class Sampler(Processor):
     def report(self):
         self.test_file.close()
         self.training_file.close()
-        
-def run():
-    fh = FileHandler(Sampler(160000000, sample=10000))
+        self.validation_file.close()
+
+def small_sample() :
+    fh = FileHandler(Sampler(160000000, "../data/small_train_sample",
+                             "../data/small_test_sample",
+                             "../data/small_validation_sample",
+                              sample=35000))
+    fh.from_file("/home/bighouse/data/ED06.bam")
+    
+def normal_sample() :
+    fh = FileHandler(Sampler(160000000, "../data/train_sample",
+                             "../data/test_sample",
+                             "../data/validation_sample",
+                              sample=350000))
     fh.from_file("/home/bighouse/data/ED06.bam")
         
-run()
+normal_sample()
         
         
         
