@@ -1,6 +1,5 @@
 '''
 Created on Oct 4, 2015
-
 @author: bighouse
 '''
 
@@ -68,21 +67,27 @@ class Sampler(Processor):
         self.training_file.close()
         self.validation_file.close()
 
-def small_sample() :
-    fh = FileHandler(Sampler(160000000, "../data/small_train_sample",
+ED06_path = "/home/bighouse/data/ED06.bam"
+ED06_wc = 111344139
+
+ED39_path = "/home/bighouse/data/ED39.bam"
+ED39_wc = 0
+
+def small_sample(wc, bamfile) :
+    global ED06_wc
+    fh = FileHandler(Sampler(ED06_wc, "../data/small_train_sample",
                              "../data/small_test_sample",
                              "../data/small_validation_sample",
                               sample=35000))
-    fh.from_file("/home/bighouse/data/ED06.bam")
+    fh.from_file(bamfile)
     
-def normal_sample() :
-    fh = FileHandler(Sampler(160000000, "../data/train_sample",
+def normal_sample(wc, bamfile) :
+    global ED06_wc
+    fh = FileHandler(Sampler(ED06_wc,
+                             "../data/train_sample",
                              "../data/test_sample",
                              "../data/validation_sample",
                               sample=350000))
-    fh.from_file("/home/bighouse/data/ED06.bam")
+    fh.from_file(bamfile)
         
-normal_sample()
-        
-        
-        
+normal_sample(ED06_wc, ED06_path)

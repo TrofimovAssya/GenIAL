@@ -167,8 +167,6 @@ class FrequencyRun():
     def test(self):
         return self.validate(self.test_file)
                 
-                
-                
 def bayes_sample_run():
     '''
     For k =  13
@@ -201,7 +199,6 @@ def bayes_sample_run():
             max_k = k
             max_success_rate = success_rate
             max_result = result
-            
         
         print "For k = ", k
         print "Success rate ", success_rate
@@ -211,4 +208,3 @@ def bayes_sample_run():
     print "Best run is ", max_k, max_success_rate, max_result
         
 bayes_sample_run()
-    
