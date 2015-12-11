@@ -1,9 +1,12 @@
 import os
 import numpy as np
+import theano
 from lasagne.layers import DenseLayer
 from lasagne.layers import InputLayer
 from lasagne.layers import DropoutLayer
+from lasagne.layers import Conv1DLayer
 from lasagne.layers import Conv2DLayer
+from lasagne.layers import MaxPool1DLayer
 from lasagne.layers import MaxPool2DLayer
 from lasagne.nonlinearities import softmax
 from lasagne.nonlinearities import rectify
@@ -15,6 +18,18 @@ from nolearn.lasagne import NeuralNet
 from nolearn.lasagne import TrainSplit
 from nolearn.lasagne import objective
 
+class AdjustLearningRate(object):
+	def __init__(self, start=0.05, stop=0.001):
+		self.start, self.stop = start, stop
+		self.ls = None
+
+	def __call__(self, nn, train_history):
+		if self.ls is None:
+			self.ls = np.linspace(self.start, self.stop, nn.max_epochs)
+		epoch = train_history[-1]['epoch']
+		new_value = np.cast['float32'](self.ls[epoch - 1])
+		getattr(nn, 'update_learning_rate').set_value(new_value)
+
 class ConvolutionalNetwork:
 	def __init__(self):
 		self.network = NeuralNet(
@@ -24,6 +39,8 @@ class ConvolutionalNetwork:
 				('maxpool1', MaxPool2DLayer),
 				('dropout1', DropoutLayer),
 				('dense', DenseLayer),
+				('dense2', DenseLayer),
+				('dense3', DenseLayer),
 				('dropout2', DropoutLayer),
 				('output', DenseLayer),
 			],
@@ -33,18 +50,23 @@ class ConvolutionalNetwork:
 			conv2d1_nonlinearity=rectify,
 			conv2d1_W=GlorotUniform(),  
 			maxpool1_pool_size=(2, 2), 
-			dropout1_p=0.5,    
+			dropout1_p=0.1,    
 			dense_num_units=256,
-			dense_nonlinearity=rectify,    
-			dropout2_p=0.5,    
+			dense_nonlinearity=rectify, 
+			dense2_num_units=256,
+			dense2_nonlinearity=rectify,    
+			dense3_num_units=256,
+			dense3_nonlinearity=rectify,  
+			dropout2_p=0.1,    
 			output_nonlinearity=softmax,
 			output_num_units=22,
 			update=nesterov_momentum,
-			update_learning_rate=0.01,
-			update_momentum=0.9,
-			max_epochs=5000,
+			update_learning_rate=theano.shared(np.cast['float32'](0.05)),
+			update_momentum=theano.shared(np.cast['float32'](0.9)),
+			max_epochs=500,
 			verbose=1,
-		)
+			on_epoch_finished=[AdjustLearningRate(start=0.05, stop=0.0001)],
+		)	
 
 	def regularization_objective(self, layers, lambda1=0., lambda2=0., *args, **kwargs):
 		# default loss
@@ -64,5 +86,4 @@ class ConvolutionalNetwork:
 		self.fit_net = self.network.fit(X, y)
 
 	def predict(self, X_test):
-		return self.fit_net.predict(X_test)
-		
+		return self.fit_net.predict(X_test)	
