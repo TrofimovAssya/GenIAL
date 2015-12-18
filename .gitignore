@@ -3,7 +3,6 @@
 *.pydevproject
 .metadata
 .gradle
-bin/
 tmp/
 *.tmp
 *.bak
@@ -16,7 +15,7 @@ tmp/
 target/
 .loadpath
 .class
- 
+data/
 # Package Files #
 *.jar
 *.war
