@@ -1,8 +1,11 @@
+#Alexis Langlois
+'''
+Algorithme du perceptron multicouche
+'''
+
 import numpy as np
 
-
 #Activation
-
 def logistic(x):
 	return 1/(1 + np.exp(-x))
 
@@ -28,13 +31,12 @@ class MultilayerPerceptron:
 			self.activation = tanh
 			self.activation_dx = tanh_dx
 		self.weights = []
-		for i in range(1, len(layers) - 1): #we skip the last two layers
+		for i in range(1, len(layers) - 1):
 			self.weights.append(0.5 * np.random.random((layers[i - 1] + 1, layers[i] + 1)) - 0.25)
 		self.weights.append(0.5 * np.random.random((layers[i] + 1, layers[i + 1])) - 0.25)
 
 
-	#Training
-							
+	#Training					
 	def train(self, X, y, learning_rate=0.1, epochs=10000):
 		X = np.atleast_2d(X)
 		inputs_and_bias = np.ones([X.shape[0], X.shape[1]+1])
@@ -58,7 +60,6 @@ class MultilayerPerceptron:
 
 
 	#Prediction
-	
 	def prediction(self, x):
 		x = np.array(x)
 		example_and_bias = np.ones(x.shape[0]+1)
