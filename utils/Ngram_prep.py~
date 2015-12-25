@@ -1,0 +1,12 @@
+from collections import Counter
+
+
+def prep_Ngrams(filename, counterdict)
+    ch = filename.split(".txt")[0]
+    counterdict[ch] = Counter()
+    
+    f = open(filename,"r")
+    for l in f.readlines():
+        l = l.split("\t")
+        counterdict[ch] = counterdict[ch]+(l[0] = l[1])
+
