@@ -1,26 +1,62 @@
+#Alexis Langlois
+'''
+Fichier de test pour le reseau de neurones a convolution.
+'''
+
 import numpy as np
 
+from sklearn.utils import shuffle
 from convnet import ConvolutionalNetwork
-from sklearn.cross_validation import train_test_split 
 from sklearn.metrics import classification_report
+from sklearn.metrics import accuracy_score
 
-# Dataset
-X = np.loadtxt('../feature/3grams_count_mc_features')
-y = np.loadtxt('../data/tag_mc')
+
+#Train dataset
+X = np.loadtxt('train_data')
+y = np.loadtxt('train_labels')
+X, y = shuffle(X, y)
+
+
+#Data normalization
 X -= X.min()
 X /= X.max()
+
+
+#Data reshape
 X = X.reshape(-1, 1, 8, 8)
 y = np.asarray(y)
 y = y.astype(np.int32)
-X_train, X_test, y_train, y_test = train_test_split(X, y)
 
-# Instanciation
+
+#Instanciation
 convnet = ConvolutionalNetwork()
 
-# Train
-convnet.train(X_train, y_train)
 
-# Report
-preds = convnet.predict(X_test)
-tags = y_test 
-print classification_report(tags, preds)
+#Training
+convnet.train(X, y)
+
+
+#Test dataset
+X = np.loadtxt('test_data')
+y = np.loadtxt('test_labels')
+X, y = shuffle(X, y)
+
+
+#Data normalization
+X -= X.min()
+X /= X.max()
+
+
+#Data reshape
+X = X.reshape(-1, 1, 8, 8)
+y = np.asarray(y)
+y = y.astype(np.int32)
+
+
+#Predictions
+predictions = convnet.predict(X)
+
+
+#Report
+print classification_report(y, predictions)
+print 'Accuracy: ' + str(accuracy_score(y, predictions))

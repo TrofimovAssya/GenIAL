@@ -1,3 +1,9 @@
+#Alexis Langlois
+'''
+Implementation d'un reseau de neurones a convolution.
+(API Lasagne)
+'''
+
 import os
 import numpy as np
 import theano
@@ -18,6 +24,7 @@ from nolearn.lasagne import NeuralNet
 from nolearn.lasagne import TrainSplit
 from nolearn.lasagne import objective
 
+#Rectification du learning rate a la fin d'un epoch
 class AdjustLearningRate(object):
 	def __init__(self, start=0.05, stop=0.001):
 		self.start, self.stop = start, stop
@@ -30,6 +37,7 @@ class AdjustLearningRate(object):
 		new_value = np.cast['float32'](self.ls[epoch - 1])
 		getattr(nn, 'update_learning_rate').set_value(new_value)
 
+#Appel de la classe NeuralNet
 class ConvolutionalNetwork:
 	def __init__(self):
 		self.network = NeuralNet(
@@ -59,11 +67,11 @@ class ConvolutionalNetwork:
 			dense3_nonlinearity=rectify,  
 			dropout2_p=0.1,    
 			output_nonlinearity=softmax,
-			output_num_units=22,
+			output_num_units=25,
 			update=nesterov_momentum,
 			update_learning_rate=theano.shared(np.cast['float32'](0.05)),
 			update_momentum=theano.shared(np.cast['float32'](0.9)),
-			max_epochs=500,
+			max_epochs=20,
 			verbose=1,
 			on_epoch_finished=[AdjustLearningRate(start=0.05, stop=0.0001)],
 		)	
@@ -82,8 +90,10 @@ class ConvolutionalNetwork:
 		losses += lambda1 * sum_abs_weights + lambda2 * sum_squared_weights
 		return losses
 
+	#Entrainement
 	def train(self, X, y):
 		self.fit_net = self.network.fit(X, y)
 
+	#Prediction
 	def predict(self, X_test):
 		return self.fit_net.predict(X_test)	

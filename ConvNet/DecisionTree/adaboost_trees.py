@@ -1,7 +1,11 @@
+#Alexis Langlois
+'''
+Simple appel des classes AdaBoostClassifier et DecisionTreeClassifier de scikit-learn.
+'''
+
 import matplotlib.pyplot as plt
 
 from sklearn.ensemble import AdaBoostClassifier
-from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
 
 class AdaboostTrees:

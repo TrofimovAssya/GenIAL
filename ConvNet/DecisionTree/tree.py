@@ -1,4 +1,7 @@
-# Decision Tree Classifier
+#Alexis Langlois
+'''
+Simple appel de la classe DecisionTreeClassifier de scikit-learn.
+'''
 
 from sklearn.tree import DecisionTreeClassifier
 
